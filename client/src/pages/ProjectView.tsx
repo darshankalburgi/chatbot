@@ -109,10 +109,10 @@ const ProjectView = () => {
     );
 
     return (
-        <div className="flex h-[calc(100vh-4rem)] space-x-6 animate-fade-in">
+        <div className="flex flex-col lg:flex-row h-auto lg:h-[calc(100vh-8rem)] space-y-6 lg:space-y-0 lg:space-x-6 animate-fade-in pb-8 lg:pb-0">
             {/* Left Panel: Chats & Knowledge */}
-            <div className="w-1/3 flex flex-col space-y-6">
-                <div className="glass-card rounded-2xl p-6 border border-white/5 h-full flex flex-col">
+            <div className="w-full lg:w-1/3 flex flex-col space-y-6 lg:h-full">
+                <div className="glass-card rounded-2xl p-6 border border-white/5 flex flex-col min-h-[400px] lg:h-full">
                     <div className="mb-6">
                         <h1 className="text-2xl font-bold text-white mb-2">{project.name}</h1>
                         <p className="text-gray-400 text-sm">{project.description}</p>
@@ -134,7 +134,7 @@ const ProjectView = () => {
                         </button>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-gray-700">
+                    <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-gray-700 max-h-[400px] lg:max-h-none">
                         {activeTab === 'prompts' ? (
                             <>
                                 <button
@@ -186,7 +186,7 @@ const ProjectView = () => {
             </div>
 
             {/* Right Panel: Chat */}
-            <div className="w-2/3">
+            <div className="w-full lg:w-2/3 min-h-[500px] lg:h-full">
                 <ChatInterface projectId={id!} prompts={prompts} />
             </div>
 

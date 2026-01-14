@@ -4,6 +4,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 const Layout: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
     React.useEffect(() => {
         const token = localStorage.getItem('token');
@@ -11,6 +12,11 @@ const Layout: React.FC = () => {
             navigate('/login');
         }
     }, [navigate]);
+
+    // Close sidebar on navigation on mobile
+    React.useEffect(() => {
+        setIsSidebarOpen(false);
+    }, [location.pathname]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -24,12 +30,32 @@ const Layout: React.FC = () => {
 
     return (
         <div className="flex h-screen bg-[#020617] text-gray-100 overflow-hidden font-sans">
+            {/* Mobile Sidebar Overlay */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
-            <aside className="w-64 glass-card flex flex-col z-20 relative">
-                <div className="p-6 border-b border-white/10">
+            <aside className={`
+                fixed inset-y-0 left-0 w-64 glass-card flex flex-col z-40 transition-transform duration-300 transform 
+                md:relative md:translate-x-0 
+                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+            `}>
+                <div className="p-6 border-b border-white/10 flex items-center justify-between">
                     <h1 className="text-3xl font-extrabold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent tracking-tight">
                         AgentX
                     </h1>
+                    <button
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="p-2 text-gray-400 hover:text-white md:hidden"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
@@ -38,8 +64,8 @@ const Layout: React.FC = () => {
                             key={item.path}
                             to={item.path}
                             className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 group ${location.pathname === item.path
-                                    ? 'bg-gradient-to-r from-blue-600/20 to-blue-400/10 text-blue-400 font-semibold shadow-lg shadow-blue-500/10 border border-blue-500/20'
-                                    : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent hover:border-white/5'
+                                ? 'bg-gradient-to-r from-blue-600/20 to-blue-400/10 text-blue-400 font-semibold shadow-lg shadow-blue-500/10 border border-blue-500/20'
+                                : 'hover:bg-white/5 text-gray-400 hover:text-white border border-transparent hover:border-white/5'
                                 }`}
                         >
                             <span className={`p-2 rounded-lg ${location.pathname === item.path ? 'bg-blue-500/20' : 'bg-white/5 group-hover:bg-white/10'} transition-colors`}>
@@ -74,14 +100,29 @@ const Layout: React.FC = () => {
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto relative">
+            <main className="flex-1 overflow-auto relative flex flex-col">
+                {/* Mobile Top Bar */}
+                <header className="md:hidden flex items-center justify-between p-4 border-b border-white/10 glass-card sticky top-0 z-20">
+                    <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+                        AgentX
+                    </h1>
+                    <button
+                        onClick={() => setIsSidebarOpen(true)}
+                        className="p-2 text-gray-400 hover:text-white"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                </header>
+
                 {/* Ambient Background Glow */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
                     <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px] animate-pulse-slow" />
                     <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-600/10 rounded-full blur-[120px] animate-pulse-slow" />
                 </div>
 
-                <div className="relative p-8 max-w-7xl mx-auto z-10 animate-fade-in">
+                <div className="relative p-4 md:p-8 max-w-7xl mx-auto z-10 animate-fade-in w-full">
                     <Outlet />
                 </div>
             </main>
