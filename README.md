@@ -1,5 +1,8 @@
 # Chatbot Platform - MERN Stack
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-alpha)](http://makeapullrequest.com)
+
 A modern chatbot platform built with the MERN stack (MongoDB, Express, React, Node.js), featuring project-based AI agents with document text extraction (PDF/Plain Text) and chat persistence.
 
 ## 🖼️ Screenshots
@@ -129,5 +132,9 @@ Follow these steps to upload the project to your GitHub repository:
 - `GET /:projectId`: Retrieve chat history for a project.
 - `POST /`: Send a message and get an AI response (includes file context).
 
+## 🤝 Contributing
+Contributions are welcome! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE OF CONDUCT](CODE_OF_CONDUCT.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
 ## 📄 License
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
