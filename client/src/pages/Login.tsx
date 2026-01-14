@@ -11,15 +11,23 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            setError('');
             const res = await api.post('/auth/login', { email, password });
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('user', JSON.stringify(res.data.user));
             navigate('/dashboard');
         } catch (err: any) {
             console.error('Login error:', err);
-            const msg = err.response?.data?.message || err.message || 'Login failed';
+            let msg = err.response?.data?.message || err.message || 'Login failed';
+
+            // Add hint for Render free tier sleep
+            if (err.code === 'ERR_NETWORK') {
+                msg = "Cannot connect to server. If you're using Render Free Tier, the backend might be waking up (please wait 1-2 minutes and try again).";
+            }
+
             setError(msg);
         }
+
     };
 
     return (
