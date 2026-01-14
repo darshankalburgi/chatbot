@@ -108,7 +108,12 @@ Follow these steps to upload the project to your GitHub repository:
    git push -u origin main
    ```
 
+## 🌐 Hosting
+
+Ready to go live? Check out our [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step instructions on hosting the backend on **Render** and the frontend on **Vercel**.
+
 ## 🛣️ API Routes
+
 
 
 ### Authentication (`/api/auth`)
