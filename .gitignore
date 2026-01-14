@@ -31,6 +31,4 @@ yarn-error.log*
 # Brain/Task artifacts (Optional: if you want to keep them local)
 .gemini/antigravity/brain
 
-# Documentation (ignored by user request)
-DEPLOYMENT.md
 
