@@ -9,13 +9,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Navigate to="/register" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/project/:id" element={<ProjectView />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>
