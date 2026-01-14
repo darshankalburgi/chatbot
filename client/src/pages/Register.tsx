@@ -17,7 +17,9 @@ const Register: React.FC = () => {
             localStorage.setItem('user', JSON.stringify(res.data.user));
             navigate('/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Registration failed');
+            console.error('Registration error:', err);
+            const msg = err.response?.data?.message || err.message || 'Registration failed';
+            setError(msg);
         }
     };
 

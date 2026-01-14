@@ -16,7 +16,9 @@ const Login: React.FC = () => {
             localStorage.setItem('user', JSON.stringify(res.data.user));
             navigate('/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Login failed');
+            console.error('Login error:', err);
+            const msg = err.response?.data?.message || err.message || 'Login failed';
+            setError(msg);
         }
     };
 
