@@ -62,26 +62,62 @@ router.post('/', async (req, res) => {
             }
         }
 
-        // 3. Get AI Response
-        const completion = await openai.chat.completions.create({
-            model: "meta-llama/llama-3.2-3b-instruct:free",
+        // 3. Get AI Response (Streaming)
+        const stream = await openai.chat.completions.create({
+            model: "google/gemini-2.0-flash-exp:free",
             messages: finalMessages,
+            stream: true,
         });
 
-        const aiContent = completion.choices[0].message.content || "";
+        // Headers are set only if stream creation succeeds
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.setHeader('Transfer-Encoding', 'chunked');
 
-        // 3. Save AI Message
-        const aiMsg = new Message({
-            role: 'assistant',
-            content: aiContent,
-            projectId
-        });
-        await aiMsg.save();
+        let aiContent = "";
 
-        res.json({ message: { role: 'assistant', content: aiContent } });
-    } catch (error) {
+        for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || "";
+            if (content) {
+                res.write(content);
+                aiContent += content;
+            }
+        }
+
+        res.end();
+
+        // 4. Save AI Message (After stream completes)
+        if (aiContent) {
+            const aiMsg = new Message({
+                role: 'assistant',
+                content: aiContent,
+                projectId
+            });
+            await aiMsg.save();
+        }
+
+    } catch (error: any) {
         console.error('OpenAI Error:', error);
-        res.status(500).json({ message: 'Error generating response', details: error instanceof Error ? error.message : String(error) });
+
+        // If headers haven't been sent yet, send JSON error
+        if (!res.headersSent) {
+            let status = 500;
+            let message = 'Error generating response';
+
+            // Check for specific OpenAI error codes
+            if (error.status === 402 || error.code === 402) {
+                status = 402;
+                message = "Free tier limit exceeded. Please try again later or check your plan.";
+            } else if (error.status === 429 || error.code === 429 || error.type === 'insufficient_quota') {
+                status = 429;
+                message = "Rate limit exceeded. The free tier for this model is temporarily busy.";
+            }
+
+            res.status(status).json({ message, details: error.message });
+        } else {
+            // If stream started, we can't send JSON, so just end it with an error message in the stream
+            res.write(`\n\n[Error: ${error.message || 'Connection interrupted'}]`);
+            res.end();
+        }
     }
 });
 

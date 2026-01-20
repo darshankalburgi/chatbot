@@ -45,25 +45,78 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId, prompts }) => 
         if (!input.trim()) return;
 
         const userMessage: Message = { role: 'user', content: input };
-
-        // Construct context from prompts
-        const systemMessages: Message[] = prompts.map(p => ({ role: 'system', content: p.content }));
-        const conversationHistory = [...messages, userMessage];
-
-        // Full payload
-        const payloadMessages = [...systemMessages, ...conversationHistory];
-
         setMessages(prev => [...prev, userMessage]);
         setInput('');
         setLoading(true);
 
+        // Construct context from prompts
+        const systemMessages: Message[] = prompts.map(p => ({ role: 'system', content: p.content }));
+        const conversationHistory = [...messages, userMessage];
+        const payloadMessages = [...systemMessages, ...conversationHistory];
+
+        // Create a placeholder for the assistant's message
+        setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
         try {
-            const res = await api.post('/chat', { messages: payloadMessages, projectId });
-            setMessages(prev => [...prev, res.data.message]);
-        } catch (err) {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5001/api'}/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? `Bearer ${token}` : '',
+                },
+                body: JSON.stringify({ messages: payloadMessages, projectId }),
+            });
+
+            if (!response.ok) {
+                let errorMessage = response.statusText;
+                try {
+                    const errorData = await response.json();
+                    if (errorData.message) errorMessage = errorData.message;
+                } catch (e) {
+                    // Ignore JSON parse error, use statusText
+                }
+                throw new Error(errorMessage);
+            }
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+
+            if (!reader) throw new Error('No reader available');
+
+            let accumulatedContent = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                accumulatedContent += chunk;
+
+                setMessages(prev => {
+                    const newMessages = [...prev];
+                    // The last message should be the assistant's placeholder we added
+                    const lastMsg = newMessages[newMessages.length - 1];
+                    if (lastMsg.role === 'assistant') {
+                        lastMsg.content = accumulatedContent;
+                    }
+                    return newMessages;
+                });
+            }
+
+        } catch (err: any) {
             console.error(err);
-            setMessages(prev => [...prev, { role: 'assistant', content: 'Error: Could not get response.' }]);
+            setMessages(prev => {
+                const newMessages = [...prev];
+                const lastMsg = newMessages[newMessages.length - 1];
+                if (lastMsg.role === 'assistant') {
+                    // Display the friendly error message
+                    lastMsg.content = `[Error: ${err.message || 'Could not get response or connection lost.'}]`;
+                }
+                return newMessages;
+            });
         } finally {
+
             setLoading(false);
         }
     };
@@ -95,8 +148,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ projectId, prompts }) => 
                         >
                             <div
                                 className={`max-w-[85%] px-6 py-4 shadow-lg backdrop-blur-sm transition-all duration-300 ${msg.role === 'user'
-                                        ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl rounded-tr-none border border-blue-400/20'
-                                        : 'glass text-gray-100 rounded-2xl rounded-tl-none border-white/5 prose prose-invert prose-sm max-w-none'
+                                    ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-2xl rounded-tr-none border border-blue-400/20'
+                                    : 'glass text-gray-100 rounded-2xl rounded-tl-none border-white/5 prose prose-invert prose-sm max-w-none'
                                     }`}
                             >
                                 {msg.role === 'user' ? (

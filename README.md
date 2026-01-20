@@ -3,7 +3,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-alpha)](http://makeapullrequest.com)
 
-A modern chatbot platform built with the MERN stack (MongoDB, Express, React, Node.js), featuring project-based AI agents with document text extraction (PDF/Plain Text) and chat persistence.
+A modern chatbot platform builAgentX is a modern MERN stack platform that allows users to create, manage, and chat with customized AI agents. It features a robust knowledge base system, custom prompt management, and a premium, responsive UI.
+
+[**View Architecture & Design Implementation**](file:///Users/darshankalburgi/Desktop/chatbot/ARCHITECTURE.md)
 
 ## 🖼️ Screenshots
 <p align="center">
