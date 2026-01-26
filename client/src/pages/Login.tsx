@@ -6,10 +6,16 @@ const Login: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Prevent duplicate submissions
+        if (loading) return;
+
+        setLoading(true);
         try {
             setError('');
             const res = await api.post('/auth/login', { email, password });
@@ -26,8 +32,9 @@ const Login: React.FC = () => {
             }
 
             setError(msg);
+        } finally {
+            setLoading(false);
         }
-
     };
 
     return (
@@ -63,9 +70,10 @@ const Login: React.FC = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg transition-all shadow-lg shadow-primary/20"
+                        disabled={loading}
+                        className="w-full bg-primary hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Sign In
+                        {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>
 
