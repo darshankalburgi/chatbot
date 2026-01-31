@@ -30,6 +30,7 @@ router.get('/:projectId', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         const { messages, projectId } = req.body;
+
         const lastUserMessage = messages[messages.length - 1];
 
         // 1. Save User Message
@@ -64,7 +65,7 @@ router.post('/', async (req, res) => {
 
         // 3. Get AI Response (Streaming)
         const stream = await openai.chat.completions.create({
-            model: "google/gemini-2.0-flash-exp:free",
+            model: "xiaomi/mimo-v2-flash",
             messages: finalMessages,
             stream: true,
         });
