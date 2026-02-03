@@ -38,8 +38,14 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-darker relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-purple-900/10" />
+        <div className="min-h-screen flex items-center justify-center bg-[#0F172A] relative overflow-hidden">
+            {/* Doodle Pattern Background */}
+            <div
+                className="absolute inset-0 w-full h-full bg-cover bg-center opacity-20"
+                style={{ backgroundImage: 'url("/doodle-pattern.png")' }}
+            />
+            {/* Gradient Overlay for Depth */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#0F172A] via-[#0F172A]/90 to-[#0F172A]/50" />
 
             <div className="w-full max-w-md bg-card p-8 rounded-2xl shadow-xl border border-gray-800 relative z-10 backdrop-blur-sm">
                 <h2 className="text-3xl font-bold mb-6 text-center text-white">Welcome Back</h2>

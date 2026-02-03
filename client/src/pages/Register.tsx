@@ -7,10 +7,16 @@ const Register: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (loading) return;
+
+        setLoading(true);
         try {
             const res = await api.post('/auth/register', { name, email, password });
             localStorage.setItem('token', res.data.token);
@@ -20,12 +26,20 @@ const Register: React.FC = () => {
             console.error('Registration error:', err);
             const msg = err.response?.data?.message || err.message || 'Registration failed';
             setError(msg);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-darker relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-bl from-secondary/10 to-blue-900/10" />
+        <div className="min-h-screen flex items-center justify-center bg-[#0F172A] relative overflow-hidden">
+            {/* Doodle Pattern Background */}
+            <div
+                className="absolute inset-0 w-full h-full bg-cover bg-center opacity-20"
+                style={{ backgroundImage: 'url("/doodle-pattern.png")' }}
+            />
+            {/* Gradient Overlay for Depth */}
+            <div className="absolute inset-0 bg-gradient-to-bl from-[#0F172A] via-[#0F172A]/90 to-[#0F172A]/50" />
 
             <div className="w-full max-w-md bg-card p-8 rounded-2xl shadow-xl border border-gray-800 relative z-10 backdrop-blur-sm">
                 <h2 className="text-3xl font-bold mb-6 text-center text-white">Create Account</h2>
@@ -67,9 +81,10 @@ const Register: React.FC = () => {
                     </div>
                     <button
                         type="submit"
+                        disabled={loading}
                         className="w-full bg-secondary hover:bg-green-600 text-white font-semibold py-2.5 rounded-lg transition-all shadow-lg shadow-secondary/20"
                     >
-                        Get Started
+                        {loading ? 'Registering...' : 'Get Started'}
                     </button>
                 </form>
 
